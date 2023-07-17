@@ -17,25 +17,32 @@ document.getElementById('form').addEventListener('submit',(e) => {
     }
     let jsn = JSON.stringify(obj);
 
-    axios.post('https://crudcrud.com/api/c3f4898c7983409e803a1b3a377b5bd2/Orders',jsn, {
-        headers:{
-            'Content-Type':'application/json'
-        }    
-    })
-    .then((response) => showUser(response.data))
-    .catch((error) => console.log(error));
-
+    async function postData(url, data){
+        try{
+            const response = await axios.post(url, data,{
+                headers:{
+                    'Content-Type' : 'application/json'
+                }
+            });
+            showUser(response.data);
+        }
+        catch(error) {console.log(error)}
+    }
+    const url = 'https://crudcrud.com/api/591c8a25b53241ed906b598270d45ac4/Orders';
+    postData(url,jsn);
     document.getElementById('form').reset();
 });
-
-window.addEventListener('DOMContentLoaded',()=>{
-    axios.get('https://crudcrud.com/api/c3f4898c7983409e803a1b3a377b5bd2/Orders')
-    .then((response) => {for(let i=0; i<response.data.length; i++){
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const response = await axios.get('https://crudcrud.com/api/591c8a25b53241ed906b598270d45ac4/Orders');
+      for (let i = 0; i < response.data.length; i++) {
         showUser(response.data[i]);
-    }}
-    )
-    .catch((error) => console.log(error));
-})
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
 function showUser(user){
     const li = document.createElement('li');
     li.innerHTML=` ${user.price} - ${user.table} - ${user.dish}<button data-id="${user._id}"class="btn btn-light m-1 py-0 delete">Delete</button>`;
@@ -50,12 +57,17 @@ function showUser(user){
     }
 }
 let list = document.getElementById('list');
-list.addEventListener('click', function(e){
-    if(e.target.classList.contains('delete')){
-        axios.delete(`https://crudcrud.com/api/c3f4898c7983409e803a1b3a377b5bd2/Orders/${e.target.getAttribute('data-id')}`)
-        .then(() => console.log("Deleted"))
-        .catch((error) => console.log(error));
-        
+
+list.addEventListener('click', async function(e) {
+    if (e.target.classList.contains('delete')) {
+      try {
+        await axios.delete(`https://crudcrud.com/api/591c8a25b53241ed906b598270d45ac4/Orders/${e.target.getAttribute('data-id')}`);
+        console.log("Deleted");
         e.target.parentElement.remove();
+      } catch (error) {
+        console.log(error);
+      }
     }
-});
+  });
+
+  
